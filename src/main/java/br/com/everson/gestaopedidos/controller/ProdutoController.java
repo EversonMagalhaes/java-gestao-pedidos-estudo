@@ -1,11 +1,11 @@
 package br.com.everson.gestaopedidos.controller;
 
-import br.com.everson.gestaopedidos.domain.Produto;
+//import br.com.everson.gestaopedidos.domain.Produto;
 import br.com.everson.gestaopedidos.service.ProdutoService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
+import br.com.everson.gestaopedidos.dto.ProdutoDTO;
 import java.util.List;
 
 @RestController
@@ -17,7 +17,7 @@ public class ProdutoController {
     }
 
     @GetMapping("/produtos")
-    public List<Produto> listar() {
+    public List<ProdutoDTO> listar() {
         return produtoService.listarTodos();
     }
 }
