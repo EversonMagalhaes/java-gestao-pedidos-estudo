@@ -8,8 +8,11 @@ import br.com.everson.gestaopedidos.dto.ProdutoDTO;
 import java.util.List;
 
 import br.com.everson.gestaopedidos.dto.ProdutoCreateDTO;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 
 @Service
+
 public class ProdutoService {
 
     private final ProdutoRepository produtoRepository;
