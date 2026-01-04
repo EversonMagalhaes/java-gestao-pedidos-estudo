@@ -8,8 +8,8 @@ import br.com.everson.gestaopedidos.dto.ProdutoDTO;
 import java.util.List;
 
 import br.com.everson.gestaopedidos.dto.ProdutoCreateDTO;
-import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
+
+import br.com.everson.gestaopedidos.exception.ProdutoNaoEncontradoException;
 
 @Service
 
@@ -44,5 +44,8 @@ public class ProdutoService {
 
         produtoRepository.save(produto);
     }
-
+    public Produto buscarPorId(Long id) {
+        return produtoRepository.findById(id)
+                .orElseThrow(() -> new ProdutoNaoEncontradoException(id));
+    }
 }
