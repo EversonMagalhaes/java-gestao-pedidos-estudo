@@ -18,6 +18,11 @@ public class Produto {
         this.preco = preco;
         this.ativo = ativo;
     }
+    public Produto(String nome, BigDecimal preco, boolean ativo) {
+        this.nome = nome;
+        this.preco = preco;
+        this.ativo = ativo;
+    }
 
     public Long getId() {
         return id;

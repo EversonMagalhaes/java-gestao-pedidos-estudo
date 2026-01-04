@@ -1,12 +1,13 @@
 package br.com.everson.gestaopedidos.service;
 
-//import br.com.everson.gestaopedidos.domain.Produto;
+import br.com.everson.gestaopedidos.domain.Produto;
 import br.com.everson.gestaopedidos.repository.ProdutoRepository;
 import org.springframework.stereotype.Service;
 import br.com.everson.gestaopedidos.dto.ProdutoDTO;
 
-
 import java.util.List;
+
+import br.com.everson.gestaopedidos.dto.ProdutoCreateDTO;
 
 @Service
 public class ProdutoService {
@@ -30,4 +31,15 @@ public class ProdutoService {
                 )
                 .toList();
     }
+
+    public void criar(ProdutoCreateDTO dto) {
+        Produto produto = new Produto(
+                dto.getNome(),
+                dto.getPreco(),
+                dto.getAtivo()
+        );
+
+        produtoRepository.save(produto);
+    }
+
 }

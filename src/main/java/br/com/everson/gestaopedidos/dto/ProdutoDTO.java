@@ -22,6 +22,5 @@ public class ProdutoDTO {
 
     public BigDecimal getPreco() {return preco;}
 
-    public boolean isAtivo() {return ativo;
-    }
+    public boolean isAtivo() {return ativo;}
 }
