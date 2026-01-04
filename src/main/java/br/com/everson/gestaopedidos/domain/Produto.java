@@ -34,4 +34,7 @@ public class Produto {
     public boolean isAtivo() {
         return ativo;
     }
+
+    protected Produto() {} /* construtor exigido pelo JPA*/
+
 }

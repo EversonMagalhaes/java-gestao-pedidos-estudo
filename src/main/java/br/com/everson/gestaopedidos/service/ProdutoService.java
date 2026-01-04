@@ -8,6 +8,7 @@ import java.util.List;
 
 @Service
 public class ProdutoService {
+
     private final ProdutoRepository produtoRepository;
 
     public ProdutoService(ProdutoRepository produtoRepository) {
@@ -15,6 +16,6 @@ public class ProdutoService {
     }
 
     public List<Produto> listarTodos() {
-        return produtoRepository.listarTodos();
+        return produtoRepository.findAll();
     }
 }
