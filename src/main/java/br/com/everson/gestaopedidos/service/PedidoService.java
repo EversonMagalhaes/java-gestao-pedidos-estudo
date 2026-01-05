@@ -7,6 +7,7 @@ import br.com.everson.gestaopedidos.dto.ItemPedidoCreateDTO;
 import br.com.everson.gestaopedidos.dto.ItemPedidoDTO;
 import br.com.everson.gestaopedidos.dto.PedidoCreateDTO;
 import br.com.everson.gestaopedidos.dto.PedidoDTO;
+import br.com.everson.gestaopedidos.exception.PedidoNaoEncontradoException;
 import br.com.everson.gestaopedidos.exception.ProdutoNaoEncontradoException;
 import br.com.everson.gestaopedidos.repository.PedidoRepository;
 import br.com.everson.gestaopedidos.repository.ProdutoRepository;
@@ -77,4 +78,12 @@ public class PedidoService {
                 .map(this::toDTO)
                 .toList();
     }
+
+    @Transactional(readOnly = true)
+    public PedidoDTO buscarPorId(Long id) {
+        Pedido pedido = pedidoRepository.findById(id)
+                .orElseThrow(() -> new PedidoNaoEncontradoException(id));
+        return toDTO(pedido);
+    }
+
 }

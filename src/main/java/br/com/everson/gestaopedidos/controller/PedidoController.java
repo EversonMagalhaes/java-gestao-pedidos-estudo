@@ -30,4 +30,9 @@ public class PedidoController {
         return pedidoService.listarTodos();
     }
 
+    @GetMapping("/{id}")
+    public PedidoDTO buscarPorId(@PathVariable Long id) {
+        return pedidoService.buscarPorId(id);
+    }
+
 }
