@@ -49,5 +49,13 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
     }
-
+    @ExceptionHandler(PedidoNaoEncontradoException.class)
+    public ResponseEntity<ApiError> handlePedidoNaoEncontrado(PedidoNaoEncontradoException ex) {
+        ApiError apiError = new ApiError(
+                HttpStatus.NOT_FOUND.value(),
+                ex.getMessage(),
+                null
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
+    }
 }
