@@ -85,5 +85,21 @@ public class PedidoService {
                 .orElseThrow(() -> new PedidoNaoEncontradoException(id));
         return toDTO(pedido);
     }
+    @Transactional
+    public PedidoDTO fecharPedido(Long id) {
+        Pedido pedido = pedidoRepository.findById(id)
+                .orElseThrow(() -> new PedidoNaoEncontradoException(id));
 
+        pedido.fechar(); // Altera status para FECHADO
+        return toDTO(pedidoRepository.save(pedido));
+    }
+
+    @Transactional
+    public PedidoDTO cancelarPedido(Long id) {
+        Pedido pedido = pedidoRepository.findById(id)
+                .orElseThrow(() -> new PedidoNaoEncontradoException(id));
+
+        pedido.cancelar(); // Altera status para CANCELADO
+        return toDTO(pedidoRepository.save(pedido));
+    }
 }

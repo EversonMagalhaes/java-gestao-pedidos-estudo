@@ -34,5 +34,13 @@ public class PedidoController {
     public PedidoDTO buscarPorId(@PathVariable Long id) {
         return pedidoService.buscarPorId(id);
     }
+    @PutMapping("/{id}/fechar")
+    public PedidoDTO fechar(@PathVariable Long id) {
+        return pedidoService.fecharPedido(id);
+    }
 
+    @PutMapping("/{id}/cancelar")
+    public PedidoDTO cancelar(@PathVariable Long id) {
+        return pedidoService.cancelarPedido(id);
+    }
 }
