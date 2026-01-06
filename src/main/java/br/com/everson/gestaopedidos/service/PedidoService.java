@@ -3,10 +3,8 @@ package br.com.everson.gestaopedidos.service;
 import br.com.everson.gestaopedidos.domain.Produto;
 import br.com.everson.gestaopedidos.domain.pedido.ItemPedido;
 import br.com.everson.gestaopedidos.domain.pedido.Pedido;
-import br.com.everson.gestaopedidos.dto.ItemPedidoCreateDTO;
-import br.com.everson.gestaopedidos.dto.ItemPedidoDTO;
-import br.com.everson.gestaopedidos.dto.PedidoCreateDTO;
-import br.com.everson.gestaopedidos.dto.PedidoDTO;
+import br.com.everson.gestaopedidos.domain.pedido.PedidoStatus;
+import br.com.everson.gestaopedidos.dto.*;
 import br.com.everson.gestaopedidos.exception.PedidoNaoEncontradoException;
 import br.com.everson.gestaopedidos.exception.ProdutoNaoEncontradoException;
 import br.com.everson.gestaopedidos.repository.PedidoRepository;
@@ -14,6 +12,9 @@ import br.com.everson.gestaopedidos.repository.ProdutoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -102,4 +103,20 @@ public class PedidoService {
         pedido.cancelar(); // Altera status para CANCELADO
         return toDTO(pedidoRepository.save(pedido));
     }
+
+    public RelatorioVendasDTO gerarRelatorio(LocalDate inicio, LocalDate fim) {
+        // Convertendo LocalDate para LocalDateTime (início e fim do dia)
+        LocalDateTime dataInicial = inicio.atStartOfDay();
+        LocalDateTime dataFinal = fim.atTime(23, 59, 59);
+
+        List<Pedido> pedidos = pedidoRepository.buscarPedidosConcluidosNoPeriodo(
+                PedidoStatus.FECHADO, dataInicial, dataFinal);
+
+        BigDecimal faturamentoTotal = pedidos.stream()
+                .map(Pedido::getTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        return new RelatorioVendasDTO(inicio, fim, faturamentoTotal, (long) pedidos.size());
+    }
+
 }
