@@ -4,6 +4,7 @@ import br.com.everson.gestaopedidos.domain.usuario.Usuario;
 import br.com.everson.gestaopedidos.dto.UsuarioCreateDTO;
 import br.com.everson.gestaopedidos.dto.UsuarioDTO;
 import br.com.everson.gestaopedidos.repository.UsuarioRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,9 +14,15 @@ import java.util.List;
 public class UsuarioService {
 
     private final UsuarioRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository repository) {
+    /*public UsuarioService(UsuarioRepository repository) {
         this.repository = repository;
+    }*/
+
+    public UsuarioService(UsuarioRepository repository, PasswordEncoder passwordEncoder) {
+        this.repository = repository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -23,7 +30,9 @@ public class UsuarioService {
         if (repository.findByLogin(dto.login()).isPresent()) {
             throw new RuntimeException("Login já existe!"); // No futuro usaremos RegraNegocioException
         }
-        Usuario usuario = new Usuario(dto.login(), dto.senha(), dto.role());
+        String senhaCriptografada = passwordEncoder.encode(dto.senha()); // AQUI A MÁGICA ACONTECE
+        Usuario usuario = new Usuario(dto.login(), senhaCriptografada, dto.role());
+        //Usuario usuario = new Usuario(dto.login(), dto.senha(), dto.role());
         repository.save(usuario);
     }
 
