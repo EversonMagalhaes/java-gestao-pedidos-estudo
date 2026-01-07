@@ -13,7 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static org.springframework.security.config.Customizer.withDefaults;
+//import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
@@ -24,15 +24,35 @@ public class SecurityConfig {
         return configuration.getAuthenticationManager();
     }
 
+    private final SecurityFilter securityFilter;
+
+    public SecurityConfig(SecurityFilter securityFilter) {
+        this.securityFilter = securityFilter;
+    }
+
     @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        // Verifique se o login está EXATAMENTE assim e ANTES do anyRequest
+                        .requestMatchers(HttpMethod.POST, "/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
+                        .anyRequest().authenticated()
+                )
+                // Esta ordem é crucial: primeiro o nosso filtro, depois o do Spring
+                .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
+    }
+/*    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())  // Desabilitamos para facilitar os testes via Postman/cURL
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // IMPORTANTE: Agora é Stateless
                 .authorizeHttpRequests(auth -> auth
-                        // Liberamos o POST de login para que seja possivel logar (meio logico, mas estou abesorvendo ainda)
                         .requestMatchers(HttpMethod.POST, "/login").permitAll()
-                        // Liberamos o POST de usuários para que novos cadastros sejam possíveis
                         .requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
                         .anyRequest().authenticated()
                 )
@@ -40,7 +60,7 @@ public class SecurityConfig {
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class); // Faremos o filtro no próximo passo
 
         return http.build();
-    }
+    }*/
    /* public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable()) // Desabilitamos para facilitar os testes via Postman/cURL

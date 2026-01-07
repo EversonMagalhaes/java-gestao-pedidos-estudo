@@ -19,11 +19,6 @@ public class AutenticacaoService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
         return repository.findByLogin(login)
-                .map(u -> User.builder()
-                        .username(u.getLogin())
-                        .password(u.getSenha()) // CUIDADO: Por enquanto a senha no banco é 123 pura
-                        .roles(u.getRole().name())
-                        .build())
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + login));
     }
 }

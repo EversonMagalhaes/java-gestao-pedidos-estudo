@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpMethod;
 
 @RestController
 @RequestMapping("/login")
@@ -22,6 +23,7 @@ public class AutenticacaoController {
 
     @PostMapping
     public String efetuarLogin(@RequestBody @Valid LoginDTO dto) {
+        System.out.println(">>> CHEGOU NO CONTROLLER: " + dto.login());
         var authenticationToken = new UsernamePasswordAuthenticationToken(dto.login(), dto.senha());
         var authentication = manager.authenticate(authenticationToken);
 
