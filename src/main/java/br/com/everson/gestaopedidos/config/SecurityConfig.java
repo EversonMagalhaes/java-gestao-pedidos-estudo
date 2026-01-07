@@ -2,11 +2,16 @@ package br.com.everson.gestaopedidos.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -15,7 +20,28 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfig {
 
     @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(csrf -> csrf.disable())  // Desabilitamos para facilitar os testes via Postman/cURL
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // IMPORTANTE: Agora é Stateless
+                .authorizeHttpRequests(auth -> auth
+                        // Liberamos o POST de login para que seja possivel logar (meio logico, mas estou abesorvendo ainda)
+                        .requestMatchers(HttpMethod.POST, "/login").permitAll()
+                        // Liberamos o POST de usuários para que novos cadastros sejam possíveis
+                        .requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
+                        .anyRequest().authenticated()
+                )
+                // Remova o httpBasic(withDefaults()) se quiser parar de usar Basic Auth
+                .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class); // Faremos o filtro no próximo passo
+
+        return http.build();
+    }
+   /* public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable()) // Desabilitamos para facilitar os testes via Postman/cURL
                 .authorizeHttpRequests(auth -> auth
@@ -25,7 +51,7 @@ public class SecurityConfig {
                 .httpBasic(withDefaults()); // Ativa a autenticação básica (User/Password)
 
         return http.build();
-    }
+    }*/
 
     /*@Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
