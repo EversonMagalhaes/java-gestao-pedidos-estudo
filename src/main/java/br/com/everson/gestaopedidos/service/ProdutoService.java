@@ -48,4 +48,13 @@ public class ProdutoService {
         return produtoRepository.findById(id)
                 .orElseThrow(() -> new ProdutoNaoEncontradoException(id));
     }
+
+    public void excluir(Long id) {
+        // Primeiro verificamos se o produto existe (reaproveitando seu método buscarPorId)
+        // Se não existir, ele já lança a ProdutoNaoEncontradoException automaticamente
+        this.buscarPorId(id);
+
+        // Se passou pela linha de cima, o produto existe, então deletamos
+        produtoRepository.deleteById(id);
+    }
 }

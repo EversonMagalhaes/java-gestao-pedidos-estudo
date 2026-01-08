@@ -2,6 +2,8 @@ package br.com.everson.gestaopedidos.controller;
 
 import br.com.everson.gestaopedidos.domain.Produto;
 import br.com.everson.gestaopedidos.service.ProdutoService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -44,6 +46,13 @@ public class ProdutoController {
                 produto.getPreco(),
                 produto.isAtivo()
         );
+    }
+
+    @DeleteMapping("/produtos/{id}")
+    @PreAuthorize("hasRole('ADMIN')") // <--- Proteção direta no método
+    public ResponseEntity deletar(@PathVariable Long id) {
+        produtoService.excluir(id);
+        return ResponseEntity.noContent().build();
     }
 
 }
