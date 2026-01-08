@@ -42,6 +42,9 @@ public class SecurityConfig {
                     req.requestMatchers(HttpMethod.POST, "/login").permitAll();
                     req.requestMatchers(HttpMethod.POST, "/usuarios").permitAll();
 
+                    // Libera o Swagger para todos:
+                    req.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll();
+
                     // 2. Restrições por Perfil (Hierarquia)
                     // Somente ADMIN pode deletar produtos
                     req.requestMatchers(HttpMethod.DELETE, "/produtos/**").hasRole("ADMIN");
