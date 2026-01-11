@@ -54,5 +54,21 @@ public class ProdutoController {
         produtoService.excluir(id);
         return ResponseEntity.noContent().build();
     }
+    @PutMapping("/produtos/{id}")
+    @PreAuthorize("hasRole('ADMIN')") // Mantendo o seu padrão de segurança
+    public ResponseEntity<ProdutoDTO> atualizar(@PathVariable Long id, @RequestBody @Valid ProdutoCreateDTO dto) {
 
+        // Chamamos o service que você acabou de ajustar
+        produtoService.atualizar(id, dto);
+
+        // Buscamos o produto atualizado para devolver ao Front-end (boa prática)
+        Produto produtoAtualizado = produtoService.buscarPorId(id);
+
+        return ResponseEntity.ok(new ProdutoDTO(
+                produtoAtualizado.getId(),
+                produtoAtualizado.getNome(),
+                produtoAtualizado.getPreco(),
+                produtoAtualizado.isAtivo()
+        ));
+    }
 }

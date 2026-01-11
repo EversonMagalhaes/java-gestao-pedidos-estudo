@@ -44,6 +44,17 @@ public class ProdutoService {
 
         produtoRepository.save(produto);
     }
+
+    public void atualizar(Long id, ProdutoCreateDTO dto) {
+        Produto produto = this.buscarPorId(id); // Acha o cara
+
+        produto.setNome(dto.getNome());   // Troca o nome
+        produto.setPreco(dto.getPreco()); // Troca o preço
+        produto.setAtivo(dto.getAtivo()); // Troca o status
+
+        produtoRepository.save(produto);  // Salva no Postgres
+    }
+
     public Produto buscarPorId(Long id) {
         return produtoRepository.findById(id)
                 .orElseThrow(() -> new ProdutoNaoEncontradoException(id));

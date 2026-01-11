@@ -40,6 +40,18 @@ public class Produto {
         return ativo;
     }
 
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public void setPreco(BigDecimal preco) {
+        this.preco = preco;
+    }
+
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
+    }
+
     protected Produto() {} /* construtor exigido pelo JPA*/
 
 }
