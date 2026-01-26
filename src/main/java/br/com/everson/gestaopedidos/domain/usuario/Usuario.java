@@ -62,4 +62,9 @@ public class Usuario implements UserDetails {
 
     @Override
     public boolean isEnabled() { return true; }
+
+    public void setLogin(String login) { this.login = login; }
+    public void setSenha(String senha) { this.senha = senha; }
+    public void setRole(Role role) { this.role = role; }
+
 }

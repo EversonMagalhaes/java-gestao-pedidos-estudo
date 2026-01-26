@@ -42,4 +42,31 @@ public class UsuarioService {
                 .map(u -> new UsuarioDTO(u.getId(), u.getLogin(), u.getRole()))
                 .toList();
     }
+
+    @Transactional
+    public UsuarioDTO atualizar(Long id, UsuarioCreateDTO dto) {
+        // 1. Busca o usuário ou lança erro se não existir
+        Usuario usuario = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado!"));
+
+        // 2. Valida se o novo login já não pertence a OUTRO usuário
+        var usuarioComMesmoLogin = repository.findByLogin(dto.login());
+        if (usuarioComMesmoLogin.isPresent() && !usuarioComMesmoLogin.get().getId().equals(id)) {
+            throw new RuntimeException("Este login já está em uso por outro usuário!");
+        }
+
+        // 3. Atualiza os dados (Usando a mutabilidade da Classe Usuario)
+        // Se o login mudar, atualizamos; se a senha mudar, criptografamos a nova
+        String senhaCriptografada = passwordEncoder.encode(dto.senha());
+
+        // Aqui usamos os SETTERS da classe Usuario
+        // Note que lemos do RECORD dto usando login() e senha()
+        usuario.setLogin(dto.login());
+        usuario.setSenha(senhaCriptografada);
+        usuario.setRole(dto.role());
+
+        // 4. Retorna o DTO de resposta
+        return new UsuarioDTO(usuario.getId(), usuario.getLogin(), usuario.getRole());
+    }
+
 }

@@ -5,6 +5,7 @@ import br.com.everson.gestaopedidos.dto.UsuarioDTO;
 import br.com.everson.gestaopedidos.service.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,4 +30,11 @@ public class UsuarioController {
     public List<UsuarioDTO> listar() {
         return service.listarTodos();
     }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public UsuarioDTO atualizar(@PathVariable Long id, @RequestBody @Valid UsuarioCreateDTO dto) {
+        return service.atualizar(id, dto);
+    }
+
 }
