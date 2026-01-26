@@ -49,7 +49,7 @@ public class SecurityConfig {
                     // 1. Rotas Públicas
                     req.requestMatchers(HttpMethod.POST, "/login").permitAll();
                     req.requestMatchers(HttpMethod.POST, "/usuarios").permitAll();
-                    req.requestMatchers("/produtosfake/*").permitAll();
+                    req.requestMatchers("/produtosfake").permitAll();
                     req.requestMatchers(HttpMethod.GET, "/relatorios/**").permitAll();
 
                     // Libera o Swagger para todos:
