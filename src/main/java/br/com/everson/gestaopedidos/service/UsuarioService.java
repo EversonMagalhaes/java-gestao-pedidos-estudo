@@ -3,54 +3,62 @@ package br.com.everson.gestaopedidos.service;
 import br.com.everson.gestaopedidos.domain.usuario.Usuario;
 import br.com.everson.gestaopedidos.dto.UsuarioCreateDTO;
 import br.com.everson.gestaopedidos.dto.UsuarioDTO;
+import br.com.everson.gestaopedidos.exception.UsuarioNaoEncontradoException;
 import br.com.everson.gestaopedidos.repository.UsuarioRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.List;
 
 @Service
 public class UsuarioService {
 
-    private final UsuarioRepository repository;
+    private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
 
-    /*public UsuarioService(UsuarioRepository repository) {
+    /*public UsuarioService_new(UsuarioRepository repository) {
         this.repository = repository;
     }*/
 
     public UsuarioService(UsuarioRepository repository, PasswordEncoder passwordEncoder) {
-        this.repository = repository;
+        this.usuarioRepository = repository;
         this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
     public void criar(UsuarioCreateDTO dto) {
-        if (repository.findByLogin(dto.login()).isPresent()) {
+        if (usuarioRepository.findByLogin(dto.login()).isPresent()) {
             throw new RuntimeException("Login já existe!"); // No futuro usaremos RegraNegocioException
         }
         String senhaCriptografada = passwordEncoder.encode(dto.senha()); // AQUI A MÁGICA ACONTECE
         Usuario usuario = new Usuario(dto.login(), senhaCriptografada, dto.role());
         //Usuario usuario = new Usuario(dto.login(), dto.senha(), dto.role());
-        repository.save(usuario);
+        usuarioRepository.save(usuario);
     }
 
     @Transactional(readOnly = true)
     public List<UsuarioDTO> listarTodos() {
-        return repository.findAll().stream()
+        return usuarioRepository.findAll().stream()
                 .map(u -> new UsuarioDTO(u.getId(), u.getLogin(), u.getRole()))
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public Usuario buscarPorId(Long id) {
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new UsuarioNaoEncontradoException(id));
     }
 
     @Transactional
     public UsuarioDTO atualizar(Long id, UsuarioCreateDTO dto) {
         // 1. Busca o usuário ou lança erro se não existir
-        Usuario usuario = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado!"));
-
+        // Usuario usuario = repository.findById(id)
+        //        .orElseThrow(() -> new UsuarioNaoEncontradoException(id)); //RuntimeException("Usuário não encontrado!"));
+        Usuario usuario = this.buscarPorId(id);
         // 2. Valida se o novo login já não pertence a OUTRO usuário
-        var usuarioComMesmoLogin = repository.findByLogin(dto.login());
+        var usuarioComMesmoLogin = usuarioRepository.findByLogin(dto.login());
         if (usuarioComMesmoLogin.isPresent() && !usuarioComMesmoLogin.get().getId().equals(id)) {
             throw new RuntimeException("Este login já está em uso por outro usuário!");
         }
@@ -67,6 +75,14 @@ public class UsuarioService {
 
         // 4. Retorna o DTO de resposta
         return new UsuarioDTO(usuario.getId(), usuario.getLogin(), usuario.getRole());
+    }
+
+    public void excluir(Long id) {
+        // 1. Reusa sua lógica: se não existir, já lança a UsuarioNaoEncontradoException
+        this.buscarPorId(id);
+
+        // 2. Use a variável 'usuarioRepository' (minúscula), que é o seu @Autowired
+        usuarioRepository.deleteById(id);
     }
 
 }

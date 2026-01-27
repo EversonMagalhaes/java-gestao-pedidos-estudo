@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,5 +43,16 @@ public class UsuarioController {
     public UsuarioDTO atualizar(@PathVariable Long id, @RequestBody @Valid UsuarioCreateDTO dto) {
         return service.atualizar(id, dto);
     }
+
+    @DeleteMapping("/{id}") // Se o Controller já tem @RequestMapping("/usuarios")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Excluir Usuário", description = "Deleta o Usuario especificado pelo Id (Somente Admin)")
+    public ResponseEntity<Void> deletar(@PathVariable Long id) { // Adicione <Void> para boas práticas
+        service.excluir(id);
+        return ResponseEntity.noContent().build(); // Retorna 204 No Content
+    }
+
+
+
 
 }
