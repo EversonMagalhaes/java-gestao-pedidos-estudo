@@ -51,6 +51,7 @@ public class SecurityConfig {
                     req.requestMatchers(HttpMethod.POST, "/usuarios").permitAll();
                     req.requestMatchers("/produtosfake").permitAll();
                     req.requestMatchers(HttpMethod.GET, "/relatorios/**").permitAll();
+                    req.requestMatchers("/hello/**").permitAll();
 
                     // Libera o Swagger para todos:
                     req.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll();
