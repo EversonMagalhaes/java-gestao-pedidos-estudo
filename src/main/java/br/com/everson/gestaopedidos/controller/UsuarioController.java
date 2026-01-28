@@ -1,7 +1,10 @@
 package br.com.everson.gestaopedidos.controller;
 
+import br.com.everson.gestaopedidos.domain.usuario.Role;
+import br.com.everson.gestaopedidos.domain.usuario.Usuario;
 import br.com.everson.gestaopedidos.dto.UsuarioCreateDTO;
 import br.com.everson.gestaopedidos.dto.UsuarioDTO;
+import br.com.everson.gestaopedidos.dto.UsuarioUpdateDTO;
 import br.com.everson.gestaopedidos.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,6 +27,10 @@ public class UsuarioController {
         this.service = service;
     }
 
+    @GetMapping("/roles")
+    public Role[] listarRoles() {
+        return Role.values();
+    }
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Cadastro de Usuário", description = "Cria um novo usuário no sistema com senha criptografada")
@@ -37,10 +44,18 @@ public class UsuarioController {
         return service.listarTodos();
     }
 
+    @GetMapping("/{id}")
+    @Operation(summary = "Buscar Usuário por ID", description = "Busca os detalhes de um usuário específico para edição")
+    public UsuarioDTO buscarPorId(@PathVariable Long id) {
+        // Chamamos o service, mas convertemos para DTO antes de enviar para o Vue
+        Usuario u = service.buscarPorId(id);
+        return new UsuarioDTO(u.getId(), u.getLogin(), u.getRole());
+    }
+
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Editar / Atualizar Usuário", description = "Atualiza os dados de um usuário existente (login, senha e role)")
-    public UsuarioDTO atualizar(@PathVariable Long id, @RequestBody @Valid UsuarioCreateDTO dto) {
+    public UsuarioDTO atualizar(@PathVariable Long id, @RequestBody @Valid UsuarioUpdateDTO dto) {
         return service.atualizar(id, dto);
     }
 

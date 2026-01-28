@@ -3,6 +3,7 @@ package br.com.everson.gestaopedidos.service;
 import br.com.everson.gestaopedidos.domain.usuario.Usuario;
 import br.com.everson.gestaopedidos.dto.UsuarioCreateDTO;
 import br.com.everson.gestaopedidos.dto.UsuarioDTO;
+import br.com.everson.gestaopedidos.dto.UsuarioUpdateDTO;
 import br.com.everson.gestaopedidos.exception.UsuarioNaoEncontradoException;
 import br.com.everson.gestaopedidos.repository.UsuarioRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -52,7 +53,7 @@ public class UsuarioService {
     }
 
     @Transactional
-    public UsuarioDTO atualizar(Long id, UsuarioCreateDTO dto) {
+    public UsuarioDTO atualizar(Long id, UsuarioUpdateDTO dto) {
         // 1. Busca o usuário ou lança erro se não existir
         // Usuario usuario = repository.findById(id)
         //        .orElseThrow(() -> new UsuarioNaoEncontradoException(id)); //RuntimeException("Usuário não encontrado!"));
@@ -65,12 +66,15 @@ public class UsuarioService {
 
         // 3. Atualiza os dados (Usando a mutabilidade da Classe Usuario)
         // Se o login mudar, atualizamos; se a senha mudar, criptografamos a nova
-        String senhaCriptografada = passwordEncoder.encode(dto.senha());
+
 
         // Aqui usamos os SETTERS da classe Usuario
         // Note que lemos do RECORD dto usando login() e senha()
         usuario.setLogin(dto.login());
-        usuario.setSenha(senhaCriptografada);
+        if (dto.senha() != null && !dto.senha().isBlank()) {
+            String senhaCriptografada = passwordEncoder.encode(dto.senha());
+            usuario.setSenha(senhaCriptografada);
+        }
         usuario.setRole(dto.role());
 
         // 4. Retorna o DTO de resposta
