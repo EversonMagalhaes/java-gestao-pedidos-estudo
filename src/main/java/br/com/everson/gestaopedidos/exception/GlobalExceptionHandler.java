@@ -104,6 +104,19 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiError);
     }
 
+    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+    public ResponseEntity<ApiError> handleDataIntegrityViolation(org.springframework.dao.DataIntegrityViolationException ex) {
+        // Aqui você pode personalizar a mensagem dependendo do que o banco responder
+        String mensagem = "Não é possível excluir este registro pois ele está relacionado a outros dados no sistema (ex: Pedidos ou Itens).";
+
+        ApiError apiError = new ApiError(
+                HttpStatus.CONFLICT.value(), // 409 Conflict é o ideal aqui
+                mensagem,
+                null
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiError);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGenericError(Exception ex) {
         ApiError apiError = new ApiError(
